@@ -15,7 +15,9 @@ pub fn run(cmd: Command) -> Result<()> {
         Command::Email(args) => email::run(args),
         Command::System(args) => system::run(args),
         Command::MessageBox(args) => message_box::run(args),
+        Command::Login(args) => accounts::run(crate::cli::AccountsCommand::Add(args)),
         Command::Accounts { command } => accounts::run(command),
+
         Command::AgentReadme => {
             crate::readme::print();
             Ok(())

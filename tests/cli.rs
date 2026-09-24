@@ -444,3 +444,27 @@ fn test_email_send_and_draft() {
     assert_eq!(code, 3);
     assert_eq!(stderr["code"], "auth_required");
 }
+
+#[test]
+fn test_login_command() {
+    let env = Env::new();
+
+    // 1. Verify `notify login --help` succeeds
+    let output = env.run(&["login", "--help"]);
+    assert_eq!(output.status.code(), Some(0));
+
+
+    // 2. Add an account via `notify login`
+    let (code, stdout, _) = env.json(&[
+        "login",
+        "ci-alerts",
+        "--type",
+        "slack",
+        "--webhook-url",
+        "https://hooks.slack.com/services/LOGIN/TEST/123",
+    ]);
+    assert_eq!(code, 0);
+    assert_eq!(stdout["status"], "created");
+    assert_eq!(stdout["name"], "ci-alerts");
+}
+

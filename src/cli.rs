@@ -31,11 +31,15 @@ pub enum Command {
     #[command(name = "message-box", alias = "messagebox", about = "Show a native OS message box dialog")]
     MessageBox(MessageBoxArgs),
 
+    #[command(about = "Log in or store notification credentials in keystore (alias for 'accounts add')")]
+    Login(Box<AddAccountArgs>),
+
     #[command(about = "Manage notification accounts and keystore credentials")]
     Accounts {
         #[command(subcommand)]
         command: AccountsCommand,
     },
+
 
     #[command(name = "agent-readme", about = "Print the agent operating manual in markdown or JSON")]
     AgentReadme,
@@ -171,8 +175,9 @@ pub enum AccountsCommand {
 
 #[derive(Args, Debug)]
 pub struct AddAccountArgs {
-    #[arg(value_name = "NAME", help = "Account / profile name")]
+    #[arg(value_name = "NAME", default_value = "default", help = "Account / profile name")]
     pub name: String,
+
 
     #[arg(long = "type", default_value = "slack", help = "Account type (slack or email)")]
     pub account_type: String,
