@@ -1,0 +1,56 @@
+# Notify CLI
+
+> A high-performance native command-line tool and agent interface for sending notifications across Slack, Email (Gmail REST API), native desktop toast notifications, and modal message boxes. Built in Rust for developers and autonomous AI agents.
+
+## When to Use This CLI
+
+Use the `notify` CLI whenever you need to:
+- **Send Slack notifications:** Post messages, custom JSON payloads, and Slack Block Kit blocks to incoming webhooks.
+- **Send emails programmatically:** Send emails with plain text and HTML fallback, multiple recipients (To, CC, BCC), and file attachments via Gmail API.
+- **Create email drafts:** Prepare drafts in Gmail instead of sending immediately via `--draft`.
+- **Trigger native desktop notifications:** Display non-blocking toast/banner alerts on macOS (`osascript`), Linux (`notify-send`), or Windows (`System.Windows.Forms.NotifyIcon`).
+- **Prompt users via modal message boxes:** Show blocking confirmation dialogs on macOS, Linux (`zenity`), or Windows (`MessageBox`).
+- **Agentic automation:** Integrate notification delivery into automated workflows using `--json` output and stable error exit codes.
+
+Do NOT use this tool if:
+- You need a persistent background chat server or full email client.
+- You require interactive GUI editors for authoring rich emails.
+
+## Core Agent Operating Principles
+
+1. **Explicit Profiles or Destinations:** Specify a configured profile name or pass direct destination flags (e.g. `--webhook-url`).
+2. **Machine-Readable Outputs:** Always supply `--json` when parsing command results in scripts or LLM tool-calling loops. Default output is human-friendly YAML.
+3. **Structured Error Envelopes:** Non-zero exit codes output JSON/YAML error envelopes on `stderr` with stable machine-readable codes (`no_account`, `auth_required`, `not_found`, `rate_limited`, `invalid_input`).
+4. **Secure Keystore Integration:** Sensitive webhook URLs and API tokens are saved to the OS keystore (macOS Keychain, Linux secret-tool, Windows DPAPI).
+
+## Key Command Patterns
+
+### Accounts & Profiles
+- `notify accounts list [--check]`: List configured notification profiles and test credentials.
+- `notify accounts add <name> --type slack --webhook-url <url>`: Add a Slack profile to the secure keystore.
+- `notify accounts add <name> --type email --from <email>`: Add an Email profile.
+- `notify accounts test <name>`: Verify connectivity and profile credentials.
+- `notify accounts remove <name> --yes`: Remove profile and delete credentials from keystore.
+
+### Slack Notifications
+- `notify slack <profile> --message "Build succeeded"`: Send text message to Slack.
+- `notify slack --webhook-url "https://hooks.slack.com/..." --message "Alert: high load"`: Send directly to webhook.
+- `notify slack <profile> --json-payload '{"text":"Deploy ready"}'`: Send structured JSON.
+- `notify slack <profile> --json-file payload.json`: Send JSON from file.
+
+### Email Notifications
+- `notify email <profile> --to "user@example.com" --subject "Status" --body "Everything ok"`: Send email.
+- `cat report.html | notify email <profile> --to "team@example.com" --subject "Report"`: Pipe HTML body via stdin.
+- `notify email <profile> --to "u@ex.com" --subject "Files" --file body.txt --attach doc.pdf`: Email with attachments.
+- `notify email <profile> --to "u@ex.com" --subject "Review" --body "Draft..." --draft`: Create draft in Gmail.
+
+### Native System & Message Box
+- `notify system --title "Build Finished" --description "All tests passed in 42s"`: Show desktop toast banner.
+- `notify message-box --title "Deploy Confirmation" --message "Review complete. Proceed?"`: Show blocking dialog.
+
+## Documentation Links
+- Full Website: https://spacecorps.github.io/Notify-Cli/
+- Exhaustive Agent Manual: https://spacecorps.github.io/Notify-Cli/llms-full.txt
+- Agent Discovery Card: https://spacecorps.github.io/Notify-Cli/.well-known/agent-card.json
+- Authentication Guide: https://spacecorps.github.io/Notify-Cli/auth.md
+- GitHub Repository: https://github.com/SpaceCorps/Notify-Cli

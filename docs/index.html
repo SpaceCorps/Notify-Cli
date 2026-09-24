@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notify CLI | Fast Native Notification CLI in Rust</title>
+  <meta name="description" content="A blazing fast native command-line tool and agent interface for Slack webhooks, Email (Gmail API), desktop toast notifications, and modal message boxes, written in Rust 2024.">
+  <link rel="canonical" href="https://spacecorps.github.io/Notify-Cli/">
+  <meta name="is-agentic-site-type" content="content">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="keywords" content="Notify, CLI, Rust, Slack notifications, Gmail API, desktop notifications, osascript, notify-send, message box, AI agents, DevOps">
+  <meta name="author" content="SpaceCorps">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://spacecorps.github.io/Notify-Cli/">
+  <meta property="og:title" content="Notify CLI | Fast Native Notification CLI in Rust">
+  <meta property="og:description" content="A blazing fast native notification CLI for Slack, Email, System desktop alerts, and GUI message boxes, written in Rust 2024.">
+  <meta property="og:image" content="https://spacecorps.github.io/Notify-Cli/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Notify CLI — Native Rust Command Line Tool">
+  <meta property="og:site_name" content="Notify CLI">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://spacecorps.github.io/Notify-Cli/">
+  <meta name="twitter:title" content="Notify CLI | Fast Native Notification CLI in Rust">
+  <meta name="twitter:description" content="A blazing fast native notification CLI for Slack, Email, System desktop alerts, and GUI message boxes, written in Rust 2024.">
+  <meta name="twitter:image" content="https://spacecorps.github.io/Notify-Cli/og-image.png">
+
+  <!-- AI Agents & Discovery -->
+  <link rel="alternate" type="text/markdown" href="https://spacecorps.github.io/Notify-Cli/index.md" title="Markdown Homepage">
+  <link rel="alternate" type="text/markdown" href="https://spacecorps.github.io/Notify-Cli/llms.txt" title="LLMs.txt">
+  <link rel="sitemap" type="application/xml" href="https://spacecorps.github.io/Notify-Cli/sitemap.xml" title="Sitemap">
+  <script>
+    if (new URLSearchParams(window.location.search).get('mode') === 'agent') {
+      window.location.href = 'llms.txt';
+    }
+  </script>
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔔</text></svg>">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "Notify CLI",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Linux, Windows",
+        "url": "https://spacecorps.github.io/Notify-Cli/",
+        "description": "A blazing fast native command-line tool and agent interface for Slack, Email, System desktop notifications, and GUI message boxes, written in Rust.",
+        "softwareVersion": "1.0.0",
+        "downloadUrl": "https://github.com/SpaceCorps/Notify-Cli/releases/tag/v1.0.0",
+        "license": "https://opensource.org/licenses/MIT",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Organization",
+          "name": "SpaceCorps",
+          "url": "https://github.com/SpaceCorps"
+        }
+      },
+      {
+        "@type": "Organization",
+        "name": "SpaceCorps",
+        "url": "https://github.com/SpaceCorps",
+        "sameAs": [
+          "https://github.com/SpaceCorps/Notify-Cli",
+          "https://github.com/SpaceCorps"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "technical support",
+          "url": "https://github.com/SpaceCorps/Notify-Cli/issues"
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-card: rgba(22, 27, 46, 0.7);
+      --bg-card-hover: rgba(30, 38, 66, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+      --border-accent: rgba(99, 102, 241, 0.35);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --accent: #38bdf8;
+      --success: #10b981;
+      --code-bg: #0d1117;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.18), transparent),
+        radial-gradient(circle 400px at 90% 20%, rgba(56, 189, 248, 0.08), transparent);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    a:hover {
+      color: #7dd3fc;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #fff;
+    }
+    .logo-badge {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    .nav-links a:hover {
+      color: #fff;
+    }
+    .btn-github {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff !important;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-github:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #fff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gradient-accent {
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto 36px;
+    }
+
+    .install-box {
+      display: inline-flex;
+      align-items: center;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 18px;
+      gap: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    .install-box span.prompt {
+      color: #64748b;
+      user-select: none;
+    }
+
+    /* Features Grid */
+    .features {
+      padding: 60px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(10px);
+    }
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Commands Table */
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-align: center;
+      color: #fff;
+    }
+    .section-desc {
+      text-align: center;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto 40px;
+    }
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin-bottom: 60px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      color: #fff;
+      font-weight: 600;
+    }
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    code {
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+      font-size: 0.88rem;
+    }
+
+    /* Terminal Preview */
+    .terminal {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 40px auto 60px;
+      max-width: 800px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: #94a3b8;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+    .terminal-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+    .terminal pre {
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+    .terminal-cmd { color: #f1f5f9; font-weight: 600; }
+    .terminal-out { color: #38bdf8; }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      background: rgba(9, 13, 22, 0.95);
+    }
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    .footer-col h4 {
+      color: #fff;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 8px;
+    }
+    .footer-col a {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .footer-col a:hover {
+      color: #fff;
+    }
+    .footer-bottom {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="logo">
+        <span>🔔</span>
+        <span>Notify CLI</span>
+        <span class="logo-badge">Rust 2024</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#commands">Commands</a></li>
+        <li><a href="llms.txt">LLMs.txt</a></li>
+        <li><a href="auth.md">Auth Guide</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="https://github.com/SpaceCorps/Notify-Cli" class="btn-github" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <div class="hero-badge">
+        <span>⚡ Standalone Static Binary</span>
+        <span>·</span>
+        <span>Sub-millisecond Cold Starts</span>
+      </div>
+      <h1>
+        <span class="gradient-text">Unified Notifications.</span><br>
+        <span class="gradient-accent">Native Rust Performance.</span>
+      </h1>
+      <p>
+        Dispatch Slack messages, Gmail REST API emails, native desktop toast banners,
+        and modal GUI dialogs from your terminal and autonomous AI agent workflows.
+      </p>
+
+      <div class="install-box">
+        <span class="prompt">$</span>
+        <span>cargo install --git https://github.com/SpaceCorps/Notify-Cli --locked</span>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot dot-red"></div>
+          <div class="terminal-dot dot-yellow"></div>
+          <div class="terminal-dot dot-green"></div>
+        </div>
+        <pre><span class="terminal-cmd">$ notify system --title "Deploy Ready" --description "All test suites green"</span>
+<span class="terminal-out">status: ok
+type: system_notification
+title: Deploy Ready
+description: All test suites green
+delivered: true</span>
+
+<span class="terminal-cmd">$ notify slack alerts --message "Build v1.0.0 released" --json</span>
+<span class="terminal-out">{
+  "status": "ok",
+  "provider": "slack",
+  "profile": "alerts",
+  "webhookUrl": "https://hooks.slack.com/...X00",
+  "delivered": true
+}</span></pre>
+      </div>
+    </div>
+
+    <section id="features" class="features container">
+      <h2 class="section-title">Why Developers & Agents Choose Notify CLI</h2>
+      <p class="section-desc">Engineered for deterministic terminal automation, maximum security, and instant feedback.</p>
+      
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">💬</div>
+          <h3>Slack Webhooks</h3>
+          <p>Send text alerts, custom JSON payloads, and Slack Block Kit components directly to incoming webhooks with optional channel/bot overrides.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">✉️</div>
+          <h3>Gmail REST API</h3>
+          <p>Deliver emails with automatic HTML detection, plain-text fallbacks, multi-recipient routing (To, CC, BCC), attachments, and draft creation.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🖥️</div>
+          <h3>Native Desktop Alerts</h3>
+          <p>Trigger non-blocking toast notifications on macOS (osascript), Linux (notify-send), or Windows balloon alerts via PowerShell.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛑</div>
+          <h3>Modal Message Boxes</h3>
+          <p>Prompt operators for critical confirmation with modal dialogs on macOS, Linux (zenity), and Windows (System.Windows.Forms.MessageBox).</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔐</div>
+          <h3>Native OS Keystores</h3>
+          <p>Secrets never touch plaintext files without explicit opt-in. Saved securely into Apple Keychain, Windows DPAPI, or Linux Secret Service.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🤖</div>
+          <h3>Agentic Architecture</h3>
+          <p>Emits YAML by default for human terminals, raw JSON with <code>--json</code>, structured stderr error envelopes, and self-documenting agent-readme.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="commands" class="container" style="padding: 40px 0 80px;">
+      <h2 class="section-title">Command Reference</h2>
+      <p class="section-desc">Comprehensive command syntax across all notification providers.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+              <th>Example Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>notify system</code></td>
+              <td>Display native OS desktop notification toast</td>
+              <td><code>notify system --title "Done" --description "Tests passed"</code></td>
+            </tr>
+            <tr>
+              <td><code>notify message-box</code></td>
+              <td>Show a modal dialog message box (blocks until dismissed)</td>
+              <td><code>notify message-box --title "Confirm" --message "Deploy now?"</code></td>
+            </tr>
+            <tr>
+              <td><code>notify slack</code></td>
+              <td>Send message or Block Kit payload to Slack webhook</td>
+              <td><code>notify slack alerts --message "Build green"</code></td>
+            </tr>
+            <tr>
+              <td><code>notify email</code></td>
+              <td>Send email or create draft via Gmail API with attachments</td>
+              <td><code>notify email work --to "team@ex.com" --subject "Report"</code></td>
+            </tr>
+            <tr>
+              <td><code>notify accounts list</code></td>
+              <td>List configured notification accounts & profile credentials</td>
+              <td><code>notify accounts list --check</code></td>
+            </tr>
+            <tr>
+              <td><code>notify accounts add</code></td>
+              <td>Store new Slack or Email profile credentials in OS keystore</td>
+              <td><code>notify accounts add alerts --type slack --webhook-url "..."</code></td>
+            </tr>
+            <tr>
+              <td><code>notify agent-readme</code></td>
+              <td>Print embedded agent operating manual in markdown or JSON</td>
+              <td><code>notify agent-readme --json</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <h4>Notify CLI</h4>
+        <p style="color: var(--text-dim); font-size: 0.85rem; max-width: 250px;">
+          An open source project maintained by the SpaceCorps engineering collective.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>Agent Interfaces</h4>
+        <ul>
+          <li><a href="llms.txt">llms.txt Overview</a></li>
+          <li><a href="llms-full.txt">Full Agent Manual</a></li>
+          <li><a href=".well-known/agent-card.json">Agent Card Manifest</a></li>
+          <li><a href=".well-known/agent-skills/index.json">Agent Skills Discovery</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Documentation</h4>
+        <ul>
+          <li><a href="auth.md">Authentication Guide</a></li>
+          <li><a href="pricing.md">Pricing & Licensing</a></li>
+          <li><a href="about.html">About & Lineage</a></li>
+          <li><a href="sitemap.xml">XML Sitemap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal & Support</h4>
+        <ul>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="contact.html">Contact & Support</a></li>
+          <li><a href="https://github.com/SpaceCorps/Notify-Cli" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+          <li><a href="https://github.com/SpaceCorps/Notify-Cli/issues" target="_blank" rel="noopener noreferrer">Issue Tracker</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      &copy; 2026 SpaceCorps. Released under the MIT License. Originally created as Notify.Console by Niels Bosma.
+    </div>
+  </footer>
+</body>
+</html>

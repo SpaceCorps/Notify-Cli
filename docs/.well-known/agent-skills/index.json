@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "notify-cli",
+      "description": "Send cross-platform Slack webhook notifications, Gmail REST API emails with MIME attachments, OS desktop notifications, and modal message boxes via Rust CLI.",
+      "type": "skill-md",
+      "url": "https://spacecorps.github.io/Notify-Cli/llms.txt"
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+# Notify CLI - Exhaustive Agent Operating Manual
+
+Notify CLI is a native Rust command-line tool built to deliver notifications across Slack, Email (Gmail REST API), native OS desktop notifications, and GUI message boxes.
+
+## Output Specification
+
+- **Default Format:** YAML on stdout via `serde_norway`.
+- **JSON Flag:** When `--json` is supplied, all outputs on stdout and error envelopes on stderr are emitted as valid JSON via `serde_json`.
+- **Empty Responses:** Actions always emit a valid status object (e.g. `{"status": "ok", ...}`) so that stdout is never empty and always parses cleanly as structured JSON/YAML.
+
+## Error Envelopes & Exit Codes
+
+On failure, the CLI writes a structured error envelope to `stderr`:
+
+```json
+{
+  "error": "Human readable error description",
+  "code": "auth_required | not_found | rate_limited | invalid_input | no_account | error",
+  "detail": "Diagnostic details or upstream HTTP error body",
+  "remediation": "Literal command string to fix the problem"
+}
+```
+
+### Exit Code Table
+
+| Code | Name | Meaning & Agent Handling |
+| :--- | :--- | :--- |
+| `0` | `ok` | Command completed successfully. Parse stdout as JSON/YAML. |
+| `1` | `error` | Unclassified error. Surface message and detail, then abort. |
+| `2` | `network` | Network connectivity or timeout error. Retry once with backoff, then stop. |
+| `3` | `auth_required` | Authentication missing or invalid. Stop; surface remediation to user. |
+| `4` | `not_found` | Requested profile, endpoint, or local file does not exist. Do not retry. |
+| `5` | `rate_limited` | Rate limit exceeded by Slack or Gmail API. Exponentially back off before retrying. |
+| `6` | `invalid_input` | Missing required argument or conflicting flags. Correct arguments before retrying. |
+| `7` | `no_account` | Specified profile does not exist in configuration or keystore. Run `notify accounts list`. |
+
+## Commands Reference
+
+### 1. Slack (`notify slack`)
+
+Send incoming webhook messages to Slack.
+
+```bash
+# Basic text message using a saved profile
+notify slack <profile> --message "Build succeeded"
+
+# Direct webhook URL without a saved profile
+notify slack --webhook-url "https://hooks.slack.com/services/..." --message "Alert text"
+
+# Send custom JSON payload or Block Kit blocks
+notify slack <profile> --json-payload '{"text":"Deploy done","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"*Deploy done*"}}]}'
+
+# Send JSON payload from disk file
+notify slack <profile> --json-file /path/to/payload.json
+
+# Override destination channel, bot username, or icon emoji
+notify slack <profile> --message "Status update" --channel "#engineering" --username "DeployBot" --icon-emoji ":rocket:"
+```
+
+### 2. Email (`notify email`)
+
+Send emails or create drafts via Gmail API with MIME attachment and HTML detection support.
+
+```bash
+# Basic text email
+notify email <profile> --to "dev@company.com" --subject "Test Run" --body "All checks passed."
+
+# Multiple recipients (To, CC, BCC)
+notify email <profile> \
+  --to "dev1@company.com,dev2@company.com" \
+  --cc "lead@company.com" \
+  --bcc "archive@company.com" \
+  --subject "Release Notes" \
+  --body "Release 1.0.0 is live."
+
+# Pipe HTML body through stdin (auto-detects HTML and generates plain-text fallback)
+cat newsletter.html | notify email <profile> --to "subscribers@company.com" --subject "Monthly Newsletter"
+
+# Email with file attachments (up to 25MB limit)
+notify email <profile> \
+  --to "auditor@company.com" \
+  --subject "Quarterly Report" \
+  --file report.txt \
+  --attach report.pdf \
+  --attach data.xlsx
+
+# Create draft in Gmail without sending
+notify email <profile> --to "client@company.com" --subject "Proposal Draft" --body "Draft contents..." --draft
+```
+
+### 3. Desktop Notifications (`notify system`)
+
+Display native desktop notifications (toast / banner). Executes asynchronously and returns immediately.
+
+```bash
+notify system --title "Build Complete" --description "Compilation finished in 3.4 seconds."
+```
+
+Platform mechanisms:
+- macOS: `osascript -e 'display notification "..." with title "..."'`
+- Linux: `notify-send "title" "description"`
+- Windows: PowerShell balloon notification via `System.Windows.Forms.NotifyIcon`
+
+### 4. GUI Message Box (`notify message-box` or `notify messagebox`)
+
+Display a modal dialog message box that blocks the calling process until the user dismisses it.
+
+```bash
+notify message-box --title "User Confirmation" --message "Deployment is ready. Press OK to proceed."
+```
+
+Platform mechanisms:
+- macOS: `osascript -e 'display dialog "..." with title "..." buttons {"OK"} default button "OK"'`
+- Linux: `zenity --info --title="..." --text="..."`
+- Windows: PowerShell dialog via `[System.Windows.Forms.MessageBox]::Show(...)`
+
+### 5. Account & Profile Management (`notify accounts`)
+
+Manage Slack profiles, email configurations, and OS keystore credentials.
+
+```bash
+# List all accounts and check secrets
+notify accounts list --check
+
+# Add Slack account with webhook URL stored in OS keystore
+notify accounts add alerts --type slack --webhook-url "https://hooks.slack.com/services/..." --channel "#alerts"
+
+# Pipe secret safely via stdin
+printf '%s' "$WEBHOOK_URL" | notify accounts add alerts --type slack --api-key-stdin
+
+# Add Email account
+notify accounts add work --type email --from "user@company.com" --default-to "team@company.com"
+
+# Test account validity
+notify accounts test alerts
+
+# Remove account and delete credentials from keystore
+notify accounts remove alerts --yes
+```
+
+### 6. Agent Readme (`notify agent-readme`)
+
+Print the embedded self-documentation manual for LLMs.
+
+```bash
+# Markdown manual
+notify agent-readme
+
+# Structured JSON format with rules and exit code definitions
+notify agent-readme --json
+```

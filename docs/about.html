@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About · Notify CLI</title>
+  <meta name="description" content="About Notify CLI: An open source native Rust notification tool and agent interface for Slack, Email, and desktop alerts.">
+  <link rel="canonical" href="https://spacecorps.github.io/Notify-Cli/about.html">
+  <meta property="og:title" content="About · Notify CLI">
+  <meta property="og:description" content="About Notify CLI: An open source native Rust notification tool and agent interface for Slack, Email, and desktop alerts.">
+  <meta property="og:url" content="https://spacecorps.github.io/Notify-Cli/about.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://spacecorps.github.io/Notify-Cli/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="is-agentic-site-type" content="content">
+  <style>
+    body { background: #090d16; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.7; padding: 40px 20px; }
+    .content-box { max-width: 800px; margin: 0 auto; background: rgba(22, 27, 46, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 40px; }
+    h1 { font-size: 2.2rem; margin-bottom: 20px; color: #fff; }
+    h2 { font-size: 1.4rem; margin-top: 30px; margin-bottom: 12px; color: #38bdf8; }
+    p { margin-bottom: 16px; color: #94a3b8; }
+    a { color: #38bdf8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back { display: inline-block; margin-bottom: 24px; color: #6366f1; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="content-box">
+    <a href="./" class="back">&larr; Back to Notify CLI</a>
+    <h1>About Notify CLI</h1>
+    
+    <p>Notify CLI is a high-performance, open-source command-line tool and agent automation interface for sending notifications across Slack, Email (Gmail REST API), native desktop toast notifications, and modal message boxes. Maintained under the SpaceCorps open-source collective, the project originated to provide developers and autonomous AI agents with a single, standalone binary capable of dispatching notifications across macOS, Linux, and Windows without runtime bloat.</p>
+
+    <h2>Project Lineage & Niels Bosma's Prototype</h2>
+    <p>Notify CLI traces its origins to <code>Notify.Console</code>, a cross-platform .NET global tool created by developer Niels Bosma. Bosma's prototype demonstrated the elegance of combining diverse notification targets—Slack webhooks, Gmail OAuth, OS notifications, and GUI dialogs—under a unified CLI syntax. In 2026, the SpaceCorps engineering team ported the codebase to native Rust 2024 to deliver sub-millisecond execution times, zero runtime dependencies, robust native OS keystore credential isolation, and first-class LLM agent support.</p>
+
+    <h2>SpaceCorps Architecture & Standards</h2>
+    <p>Every tool under SpaceCorps adheres to strict production engineering tenets: blocking I/O with connection pooling rather than heavy async runtimes, structured JSON output via <code>--json</code>, YAML output by default for terminal readability, structured stderr error envelopes with remediation guidance, and seamless OS keystore integration via Apple Keychain, Windows DPAPI, and Linux secret-tool.</p>
+
+    <h2>Open Source & Community</h2>
+    <p>Notify CLI is licensed under the permissive MIT License. Contributions, feedback, and issue reports are welcome on GitHub at <a href="https://github.com/SpaceCorps/Notify-Cli">github.com/SpaceCorps/Notify-Cli</a>.</p>
+  </div>
+</body>
+</html>

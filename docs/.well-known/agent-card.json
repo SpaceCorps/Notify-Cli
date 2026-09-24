@@ -1,0 +1,23 @@
+{
+  "name": "Notify CLI Agent",
+  "description": "Agent interface and cross-platform notification tool for Slack, Email, System desktop notifications, and GUI message boxes.",
+  "url": "https://spacecorps.github.io/Notify-Cli/",
+  "version": "1.0.0",
+  "capabilities": [
+    "notification",
+    "slack",
+    "email",
+    "system-notification",
+    "message-box"
+  ],
+  "skills": [
+    {
+      "name": "notify-cli",
+      "url": "https://spacecorps.github.io/Notify-Cli/llms.txt"
+    }
+  ],
+  "contact": {
+    "email": "contact@spacecorps.dev",
+    "url": "https://spacecorps.github.io/Notify-Cli/contact.html"
+  }
+}
