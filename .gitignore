@@ -1,19 +1,7 @@
-bin/
-obj/
-*.user
-*.suo
-.vs/
-nupkgs/
-
-# Configuration files with secrets
+/target/
 config.yaml
-src/config.yaml
-
-# OAuth credentials (stored in AppData, but just in case)
-client_secret*.json
-user_credential*.json
-**/gmail-credentials/
-
-# Test files that might contain real data
-test-*.txt
-test-*.html
+*.tmp
+.DS_Store
+secrets.json
+secrets.dpapi
+.lock
